@@ -122,7 +122,7 @@ def search_colleges(query: str, case_sensitive: bool, startwith: bool) -> List[D
     return search_in_dataframe(colleges_df, "College", query, case_sensitive, startwith)
 
 def search_cities(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
-    return search_in_dataframe(cities_df, "Cities", query, case_sensitive, startwith)
+    return search_in_dataframe(cities_df, "City", query, case_sensitive, startwith)
 
 
 # =========================
