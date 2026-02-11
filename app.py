@@ -10,7 +10,7 @@ from fastapi import FastAPI, Query, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-
+from pathlib import Path
 
 # =========================
 # Initialize FastAPI app
@@ -52,6 +52,8 @@ logger.addHandler(log_handler)
 # Load Data
 # =========================
 data_dir = os.path.join(cwd, "data")
+BASE_DIR = Path(__file__).resolve().parent  # /home/cdn/smart_search_app/app
+data_dir = BASE_DIR / "data"
 print(data_dir)
 
 def _read_csv_safely(path: str) -> pd.DataFrame:
