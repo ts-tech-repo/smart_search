@@ -114,10 +114,14 @@ def search_in_dataframe(
 def search_pincode(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
     return search_in_dataframe(pincodes_df, "PinCode", query, case_sensitive, startwith)
 
+def search_district(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
+    return search_in_dataframe(pincodes_df, "District", query, case_sensitive, startwith)
+
+def search_state(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
+    return search_in_dataframe(pincodes_df, "StateName", query, case_sensitive, startwith)
 
 def search_schools(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
     return search_in_dataframe(schools_df, "School Name", query, case_sensitive, startwith)
-
 
 def search_colleges(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
     return search_in_dataframe(colleges_df, "College", query, case_sensitive, startwith)
@@ -144,6 +148,10 @@ async def search(
             results = search_schools(query, case_sensitive, startwith)
         elif atype == "college":
             results = search_colleges(query, case_sensitive, startwith)
+        elif atype == "state":
+            results = search_state(query, case_sensitive, startwith)
+        elif atype in ["district", "city"]:
+            results = search_district(query, case_sensitive, startwith)
         else:
             raise HTTPException(
                 status_code=400,
