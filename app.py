@@ -146,7 +146,7 @@ async def search(
             results = search_schools(query, case_sensitive, startwith)
         elif atype == "college":
             results = search_colleges(query, case_sensitive, startwith)
-        elif atype == "cities":
+        elif atype == "city":
             results = search_cities(query, case_sensitive, startwith)
         else:
             raise HTTPException(
