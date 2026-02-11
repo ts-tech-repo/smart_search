@@ -65,9 +65,10 @@ try:
     pincodes_df = _read_csv_safely(os.path.join(data_dir, "pincodes.csv"))
     schools_df  = _read_csv_safely(os.path.join(data_dir, "schools.csv"))
     colleges_df = _read_csv_safely(os.path.join(data_dir, "colleges.csv"))
+    cities_df = _read_csv_safely(os.path.join(data_dir, "cities.csv"))
     logger.info(
-        "Loaded CSVs: pincodes(%s rows), schools(%s rows), colleges(%s rows)",
-        len(pincodes_df), len(schools_df), len(colleges_df)
+        "Loaded CSVs: pincodes(%s rows), schools(%s rows), colleges(%s rows), cities(%s rows)",
+        len(pincodes_df), len(schools_df), len(colleges_df), len(cities_df)
     )
 except Exception as e:
     logger.exception("Failed to load CSVs: %s", e)
@@ -114,17 +115,14 @@ def search_in_dataframe(
 def search_pincode(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
     return search_in_dataframe(pincodes_df, "PinCode", query, case_sensitive, startwith)
 
-def search_district(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
-    return search_in_dataframe(pincodes_df, "District", query, case_sensitive, startwith)
-
-def search_state(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
-    return search_in_dataframe(pincodes_df, "StateName", query, case_sensitive, startwith)
-
 def search_schools(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
     return search_in_dataframe(schools_df, "School Name", query, case_sensitive, startwith)
 
 def search_colleges(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
     return search_in_dataframe(colleges_df, "College", query, case_sensitive, startwith)
+
+def search_cities(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
+    return search_in_dataframe(cities_df, "Cities", query, case_sensitive, startwith)
 
 
 # =========================
@@ -148,10 +146,8 @@ async def search(
             results = search_schools(query, case_sensitive, startwith)
         elif atype == "college":
             results = search_colleges(query, case_sensitive, startwith)
-        elif atype == "state":
-            results = search_state(query, case_sensitive, startwith)
-        elif atype in ["district", "city"]:
-            results = search_district(query, case_sensitive, startwith)
+        elif atype == "cities":
+            results = search_cities(query, case_sensitive, startwith)
         else:
             raise HTTPException(
                 status_code=400,
