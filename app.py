@@ -59,16 +59,17 @@ print(data_dir)
 def _read_csv_safely(path: str) -> pd.DataFrame:
     if not os.path.exists(path):
         raise FileNotFoundError(f"CSV not found: {path}")
-    return pd.read_csv(path, encoding="latin1")
+    return pd.read_csv(path, encoding="latin1", dtype=str).fillna("")
 
 try:
     pincodes_df = _read_csv_safely(os.path.join(data_dir, "pincodes.csv"))
     schools_df  = _read_csv_safely(os.path.join(data_dir, "schools.csv"))
     colleges_df = _read_csv_safely(os.path.join(data_dir, "colleges.csv"))
     cities_df = _read_csv_safely(os.path.join(data_dir, "cities.csv"))
+    india_pincode_df = _read_csv_safely(os.path.join(data_dir, "India_pincode.csv"))
     logger.info(
-        "Loaded CSVs: pincodes(%s rows), schools(%s rows), colleges(%s rows), cities(%s rows)",
-        len(pincodes_df), len(schools_df), len(colleges_df), len(cities_df)
+        "Loaded CSVs: pincodes(%s rows), schools(%s rows), colleges(%s rows), cities(%s rows), india_pincode_df(%s rows)",
+        len(pincodes_df), len(schools_df), len(colleges_df), len(cities_df), len(india_pincode_df)
     )
 except Exception as e:
     logger.exception("Failed to load CSVs: %s", e)
@@ -124,6 +125,8 @@ def search_colleges(query: str, case_sensitive: bool, startwith: bool) -> List[D
 def search_cities(query: str, case_sensitive: bool, startwith: bool) -> List[Dict[str, Any]]:
     return search_in_dataframe(cities_df, "City", query, case_sensitive, startwith)
 
+def search_india_pincode(query: str, case_sensitive: bool, startwith: bool, column: str = "City") -> List[Dict[str, Any]]:
+    return search_in_dataframe(india_pincode_df, column, query, case_sensitive, startwith)
 
 # =========================
 # Routes
@@ -134,6 +137,7 @@ async def search(
     query: str = Query(..., description="Search text to match"),
     case_sensitive: bool = Query(False, description="Match case (default: False)"),
     startwith: bool = Query(False, description="Match only if startswith (default: False)"),
+    column: str = None
 ):
     try:
         atype = action_type.strip().lower()
@@ -148,6 +152,11 @@ async def search(
             results = search_colleges(query, case_sensitive, startwith)
         elif atype == "city":
             results = search_cities(query, case_sensitive, startwith)
+        elif atype == "all-india":
+            if column:
+                results = search_india_pincode(query, case_sensitive, startwith, column.capitalize())
+            else:
+                results = search_india_pincode(query, case_sensitive, startwith)
         else:
             raise HTTPException(
                 status_code=400,
